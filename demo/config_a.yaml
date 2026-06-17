@@ -1,0 +1,29 @@
+# Demo Config A — The Deceptive One
+# Every traditional tool: ✅ SHIP
+# HELIOS: 🔴 BLOCK
+#
+# This config is syntactically valid. Schema validates. Unit tests pass.
+# But it has caused a $4.2M outage in production (INC-3458, Black Friday 2024).
+# Vendor advisory CSA-2024-001 specifies minimum 4.5s for mixed-network deployments.
+# HELIOS will block this.
+
+service: pos-authentication
+version: 2.4.1
+environment: production
+
+# Authentication Configuration
+authentication_timeout: 3s     # ← CHANGED from 5s — HELIOS will BLOCK this
+session_token_expiry: 3600s
+max_concurrent_auth_requests: 1200
+
+# Connection Pool
+database_connection_pool: 50
+database_timeout: 10s
+
+# Security
+ssl_verification: true
+tls_min_version: "1.2"
+
+# Logging
+log_level: INFO
+log_retention_days: 30

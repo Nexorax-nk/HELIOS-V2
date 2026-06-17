@@ -1,0 +1,23 @@
+# Demo Config B — The Safe One
+# Junior engineer flagged this as "potentially dangerous"
+# HELIOS: 🟢 SHIP — low blast radius, no historical failures, optimal timing
+#
+# This proves HELIOS is PRECISE, not paranoid.
+# It catches dangerous changes AND correctly approves safe ones.
+
+service: internal-dashboard
+version: 1.8.2
+environment: production
+
+# Display Configuration
+ui_theme: dark          # ← CHANGED from light to dark
+show_beta_features: false
+max_results_per_page: 50
+
+# Logging
+log_level: INFO
+log_retention_days: 30  # ← CHANGED from 14 to 30 (additive, no risk)
+
+# Performance (non-critical service)
+cache_ttl: 300s
+max_connections: 20

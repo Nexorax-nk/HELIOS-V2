@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HELIOS — Config Intelligence Platform</title>
+  <meta name="description" content="HELIOS: Heuristic Evaluation & Launch Intelligence for Operational Safety. AI-powered pre-deployment config safety for CI/CD pipelines, built for the Band of Agents Hackathon." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Background grid -->
+  <div class="bg-grid"></div>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 2L24 8V20L14 26L4 20V8L14 2Z" stroke="url(#hex-grad)" stroke-width="1.5" fill="none"/>
+            <path d="M14 7L20 10.5V17.5L14 21L8 17.5V10.5L14 7Z" fill="url(#hex-grad)" opacity="0.3"/>
+            <circle cx="14" cy="14" r="3" fill="url(#hex-grad)"/>
+            <defs>
+              <linearGradient id="hex-grad" x1="4" y1="2" x2="24" y2="26" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6366f1"/>
+                <stop offset="1" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">HELIOS</span>
+        <span class="logo-badge">v1.0</span>
+      </div>
+      <nav class="header-nav">
+        <a href="#evaluate" class="nav-link active" data-tab="evaluate">Evaluate</a>
+        <a href="#pipeline" class="nav-link" data-tab="pipeline">Pipeline</a>
+        <a href="#history" class="nav-link" data-tab="history">History</a>
+        <a href="#docs" class="nav-link" data-tab="docs">Docs</a>
+      </nav>
+      <div class="header-status">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Connecting...</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ── Hero ── -->
+    <section class="hero">
+      <div class="hero-tag">Band of Agents Hackathon 2026 · Built with Band SDK</div>
+      <h1 class="hero-title">
+        Config changes cause<br/>
+        <span class="gradient-text">70% of all outages.</span><br/>
+        HELIOS catches them first.
+      </h1>
+      <p class="hero-subtitle">
+        6 AI agents. Real-time organizational reasoning. Every config change evaluated before it touches production.
+      </p>
+      <div class="hero-chips">
+        <div class="chip chip-block">🔴 BLOCK when it's dangerous</div>
+        <div class="chip chip-ship">🟢 SHIP when it's safe</div>
+        <div class="chip chip-ms">Powered by Band Multi-Agent Orchestration</div>
+      </div>
+    </section>
+
+    <!-- ── Evaluate Panel ── -->
+    <section class="section" id="section-evaluate">
+      <div class="section-header">
+        <h2 class="section-title">Evaluate Config Change</h2>
+        <p class="section-sub">Paste a config diff or upload a file. HELIOS runs 6 agents in real time.</p>
+      </div>
+
+      <div class="evaluate-grid">
+        <!-- Input Card -->
+        <div class="card input-card">
+          <div class="card-header">
+            <span class="card-label">Config Diff</span>
+            <div class="demo-buttons">
+              <button class="btn-demo btn-demo-a" onclick="loadDemoA()" id="demoABtn">
+                🔴 Load Demo A (BLOCK)
+              </button>
+              <button class="btn-demo btn-demo-b" onclick="loadDemoB()" id="demoBBtn">
+                🟢 Load Demo B (SHIP)
+              </button>
+            </div>
+          </div>
+          <textarea
+            id="configDiff"
+            class="code-input"
+            placeholder="-authentication_timeout: 5s&#10;+authentication_timeout: 3s"
+            spellcheck="false"
+          ></textarea>
+          <div class="input-row">
+            <div class="input-group">
+              <label class="input-label">Config File</label>
+              <input type="text" id="configFile" class="input-field" value="auth.yaml" placeholder="auth.yaml" />
+            </div>
+            <div class="input-group">
+              <label class="input-label">Environment</label>
+              <select id="environment" class="input-field">
+                <option value="production">production</option>
+                <option value="staging">staging</option>
+                <option value="development">development</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label class="input-label">Engineer ID</label>
+              <input type="text" id="engineerId" class="input-field" value="EMP-001" placeholder="EMP-001" />
+            </div>
+          </div>
+          <button class="btn-evaluate" id="evaluateBtn" onclick="startEvaluation()">
+            <span class="btn-icon">⚡</span>
+            Run HELIOS Pipeline
+          </button>
+        </div>
+
+        <!-- Verdict Card -->
+        <div class="card verdict-card" id="verdictCard">
+          <div class="verdict-placeholder" id="verdictPlaceholder">
+            <div class="placeholder-icon">🛡️</div>
+            <p class="placeholder-text">Submit a config change to see HELIOS in action</p>
+            <p class="placeholder-sub">6 agents will analyze it in real time</p>
+          </div>
+          <div class="verdict-result hidden" id="verdictResult">
+            <div class="verdict-header">
+              <div class="verdict-badge" id="verdictBadge"></div>
+              <div class="verdict-meta">
+                <div class="risk-gauge-container">
+                  <svg class="risk-gauge" viewBox="0 0 100 100">
+                    <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                    <circle class="gauge-progress" id="gaugeProgress" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                  </svg>
+                  <div class="gauge-text">
+                    <span id="verdictScore" class="score-value">—</span>
+                    <span class="score-label">RISK</span>
+                  </div>
+                </div>
+                <div class="verdict-time" id="verdictTime"></div>
+              </div>
+            </div>
+            <div class="verdict-summary" id="verdictSummary"></div>
+
+            <div class="reasoning-chain" id="reasoningChain"></div>
+
+            <div class="remediation-section hidden" id="remediationSection">
+              <h4 class="section-mini-title">🔧 Remediation Plan</h4>
+              <div id="remediationSteps"></div>
+            </div>
+
+            <div class="monitoring-section hidden" id="monitoringSection">
+              <h4 class="section-mini-title">📊 Monitor These Metrics</h4>
+              <div id="monitoringRecs"></div>
+            </div>
+
+            <div class="safe-window hidden" id="safeWindowSection">
+              <span class="safe-window-icon">✅</span>
+              Safe deployment window: <span id="safeWindowText" class="safe-window-value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Pipeline Visualization ── -->
+    <section class="section" id="section-pipeline">
+      <div class="section-header">
+        <h2 class="section-title">Live Agent Pipeline</h2>
+        <p class="section-sub">Watch 6 agents reason across history, topology, and organizational context in real time.</p>
+      </div>
+
+      <div class="pipeline-container">
+        <!-- Layer labels -->
+        <div class="pipeline-layers">
+          <div class="layer-label" style="--layer-top: 0">Layer 1<br/><span>Understanding</span></div>
+          <div class="layer-label" style="--layer-top: 1">Layer 2<br/><span>Evidence (parallel)</span></div>
+          <div class="layer-label" style="--layer-top: 2">Layer 3<br/><span>Consequence</span></div>
+          <div class="layer-label" style="--layer-top: 3">Layer 4<br/><span>Verdict</span></div>
+        </div>
+
+        <!-- Agent cards -->
+        <div class="agents-grid">
+          <div class="agent-row row-1">
+            <div class="agent-card" id="agent-SENTINEL" data-agent="SENTINEL">
+              <div class="agent-status-dot"></div>
+              <div class="agent-icon">👁️</div>
+              <div class="agent-name">SENTINEL</div>
+              <div class="agent-role">Semantic Change Agent</div>
+              <div class="agent-output hidden" id="output-SENTINEL"></div>
+            </div>
+          </div>
+
+          <div class="agent-row row-2">
+            <div class="agent-card" id="agent-CHRONICLE" data-agent="CHRONICLE">
+              <div class="agent-status-dot"></div>
+              <div class="agent-icon">📚</div>
+              <div class="agent-name">CHRONICLE</div>
+              <div class="agent-role">Historical Evidence (Foundry IQ)</div>
+              <div class="agent-output hidden" id="output-CHRONICLE"></div>
+            </div>
+            <div class="agent-card" id="agent-MERIDIAN" data-agent="MERIDIAN">
+              <div class="agent-status-dot"></div>
+              <div class="agent-icon">🗺️</div>
+              <div class="agent-name">MERIDIAN</div>
+              <div class="agent-role">Dependency Mapping (Fabric IQ)</div>
+              <div class="agent-output hidden" id="output-MERIDIAN"></div>
+            </div>
+            <div class="agent-card" id="agent-CONTEXT" data-agent="CONTEXT">
+              <div class="agent-status-dot"></div>
+              <div class="agent-icon">🕐</div>
+              <div class="agent-name">CONTEXT</div>
+              <div class="agent-role">Org Context (Work IQ)</div>
+              <div class="agent-output hidden" id="output-CONTEXT"></div>
+            </div>
+          </div>
+
+          <div class="agent-row row-3">
+            <div class="agent-card agent-oracle" id="agent-ORACLE" data-agent="ORACLE">
+              <div class="agent-status-dot"></div>
+              <div class="agent-icon">🔮</div>
+              <div class="agent-name">ORACLE</div>
+              <div class="agent-role">Consequence Prediction ⭐</div>
+              <div class="agent-output hidden" id="output-ORACLE"></div>
+            </div>
+          </div>
+
+          <div class="agent-row row-4">
+            <div class="agent-card agent-arbiter" id="agent-ARBITER" data-agent="ARBITER">
+              <div class="agent-status-dot"></div>
+              <div class="agent-icon">⚖️</div>
+              <div class="agent-name">ARBITER</div>
+              <div class="agent-role">Decision & Remediation</div>
+              <div class="agent-output hidden" id="output-ARBITER"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live log -->
+        <div class="pipeline-log" id="pipelineLog">
+          <div class="log-header">Pipeline Log</div>
+          <div class="log-entries" id="logEntries">
+            <div class="log-entry log-dim">Waiting for evaluation...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── History ── -->
+    <section class="section" id="section-history">
+      <div class="section-header">
+        <h2 class="section-title">Evaluation History</h2>
+        <button class="btn-refresh" onclick="loadHistory()">↻ Refresh</button>
+      </div>
+      <div class="history-container" id="historyContainer">
+        <div class="history-empty">No evaluations yet. Run your first config change above.</div>
+      </div>
+    </section>
+
+    <!-- ── Architecture Docs ── -->
+    <section class="section" id="section-docs">
+      <div class="section-header">
+        <h2 class="section-title">Architecture</h2>
+        <p class="section-sub">6 agents collaborating through the Band shared environment</p>
+      </div>
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-iq-badge foundry">Foundry IQ</div>
+          <h3>Knowledge Retrieval</h3>
+          <p>CHRONICLE queries the organizational knowledge base — incident postmortems, vendor advisories, runbooks — via semantic similarity search. Every risk claim is cited.</p>
+        </div>
+        <div class="arch-card">
+          <div class="arch-iq-badge fabric">Fabric IQ</div>
+          <h3>Business Topology</h3>
+          <p>MERIDIAN traverses the semantic ontology — Config → Service → Department → Revenue — to compute blast radius and quantify business impact in dollars.</p>
+        </div>
+        <div class="arch-card">
+          <div class="arch-iq-badge work">Work IQ</div>
+          <h3>Organizational Pulse</h3>
+          <p>CONTEXT reads organizational signals — calendar events, engineer availability, team fatigue, traffic patterns — to assess deployment timing risk.</p>
+        </div>
+        <div class="arch-card">
+          <div class="arch-iq-badge claude">Band SDK</div>
+          <h3>Agent Collaboration Layer</h3>
+          <p>All 6 agents coordinate through a shared Band room, passing context, delegating tasks, and handing off evaluations across the pipeline.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-logo">HELIOS</span>
+      <span class="footer-tagline">Band of Agents Hackathon 2026</span>
+      <span class="footer-copy">Built with Band SDK</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

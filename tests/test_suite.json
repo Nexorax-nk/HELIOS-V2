@@ -1,0 +1,668 @@
+{
+  "test_suite_version": "1.0",
+  "total_tests": 73,
+  "categories": {
+    "BLOCK": 35,
+    "WARN": 23,
+    "SHIP": 15
+  },
+  "tests": [
+    {
+      "id": "TC-001",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 3s",
+      "context": "Friday 6PM, primary engineer on PTO, peak traffic imminent, 4200 POS terminals",
+      "expected_verdict": "BLOCK",
+      "reason": "Historical precedent (INC-2847, INC-3458) + critical blast radius + Friday deployment timing compounding"
+    },
+    {
+      "id": "TC-002",
+      "category": "BLOCK",
+      "config_file": "sensor.yaml",
+      "config_diff": "-memory_threshold: 1024MB\n+memory_threshold: 2048MB",
+      "context": "Windows Server 2019 fleet, vendor limit is 1800MB",
+      "expected_verdict": "BLOCK",
+      "reason": "Vendor OS limit exceeded — INC-3012 direct precedent (OOM crash)"
+    },
+    {
+      "id": "TC-003",
+      "category": "BLOCK",
+      "config_file": "gateway.yaml",
+      "config_diff": "-database_connection_pool: 50\n+database_connection_pool: 500",
+      "context": "Production, current DB max_connections is 100",
+      "expected_verdict": "BLOCK",
+      "reason": "Dependency constraint violation — connection pool exceeds DB capacity, cascade failure"
+    },
+    {
+      "id": "TC-004",
+      "category": "BLOCK",
+      "config_file": "gateway.yaml",
+      "config_diff": "-ssl_verification: true\n+ssl_verification: false",
+      "context": "Production payment service",
+      "expected_verdict": "BLOCK",
+      "reason": "Security config disabled on critical payment service — compliance violation"
+    },
+    {
+      "id": "TC-005",
+      "category": "BLOCK",
+      "config_file": "rate-limit.yaml",
+      "config_diff": "-rate_limit: 1000\n+rate_limit: 0",
+      "context": "Public API gateway, production",
+      "expected_verdict": "BLOCK",
+      "reason": "DDoS exposure — no rate limiting on public endpoint (INC-3301 direct precedent)"
+    },
+    {
+      "id": "TC-006",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 2s",
+      "context": "Any time, 4200 POS terminals on mixed-network",
+      "expected_verdict": "BLOCK",
+      "reason": "Below vendor minimum (4.5s). INC-3458 exact precedent: 38% failure rate, $4.2M loss"
+    },
+    {
+      "id": "TC-007",
+      "category": "BLOCK",
+      "config_file": "fraud.yaml",
+      "config_diff": "-ml_model_threshold: 0.85\n+ml_model_threshold: 0.10",
+      "context": "Production fraud detection, Tuesday morning",
+      "expected_verdict": "BLOCK",
+      "reason": "Extreme threshold reduction — will block >90% of legitimate transactions"
+    },
+    {
+      "id": "TC-008",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-tls_min_version: \"1.2\"\n+tls_min_version: \"1.0\"",
+      "context": "Production, payment service",
+      "expected_verdict": "BLOCK",
+      "reason": "TLS 1.0 is deprecated and insecure — PCI-DSS compliance violation"
+    },
+    {
+      "id": "TC-009",
+      "category": "BLOCK",
+      "config_file": "gateway.yaml",
+      "config_diff": "-max_concurrent_auth_requests: 1200\n+max_concurrent_auth_requests: 10000",
+      "context": "Production, 4200 endpoint service",
+      "expected_verdict": "BLOCK",
+      "reason": "Connection limit exceeds database capacity — guaranteed cascade failure under load"
+    },
+    {
+      "id": "TC-010",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 3s",
+      "context": "Saturday 2PM, weekend peak traffic",
+      "expected_verdict": "BLOCK",
+      "reason": "Weekend deployment + precedent + critical blast radius triple compound"
+    },
+    {
+      "id": "TC-011",
+      "category": "BLOCK",
+      "config_file": "rate-limit.yaml",
+      "config_diff": "+ssl_verification: disabled",
+      "context": "Production API gateway",
+      "expected_verdict": "BLOCK",
+      "reason": "SSL disabled on API gateway — security catastrophe"
+    },
+    {
+      "id": "TC-012",
+      "category": "BLOCK",
+      "config_file": "fraud.yaml",
+      "config_diff": "-enabled: true\n+enabled: false",
+      "context": "Production fraud detection",
+      "expected_verdict": "BLOCK",
+      "reason": "Disabling fraud detection on production — compliance and financial catastrophe"
+    },
+    {
+      "id": "TC-013",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-session_token_expiry: 3600s\n+session_token_expiry: 30s",
+      "context": "Production, 4200 terminals",
+      "expected_verdict": "BLOCK",
+      "reason": "30s token expiry causes terminal re-auth storm every 30 seconds under load"
+    },
+    {
+      "id": "TC-014",
+      "category": "BLOCK",
+      "config_file": "gateway.yaml",
+      "config_diff": "-retry_attempts: 3\n+retry_attempts: 50",
+      "context": "Production API gateway",
+      "expected_verdict": "BLOCK",
+      "reason": "Extreme retry amplification — degraded upstream causes 50x load amplification"
+    },
+    {
+      "id": "TC-015",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 3s",
+      "context": "Thursday 5PM before earnings call Friday 9AM",
+      "expected_verdict": "BLOCK",
+      "reason": "Earnings call + precedent + blast radius — board visibility on failure"
+    },
+    {
+      "id": "TC-016",
+      "category": "BLOCK",
+      "config_file": "fraud.yaml",
+      "config_diff": "-ml_model_threshold: 0.85\n+ml_model_threshold: 0.40",
+      "context": "Production, Tuesday morning",
+      "expected_verdict": "BLOCK",
+      "reason": "INC-2654 direct precedent: threshold drop to 0.40 caused 340% false positives"
+    },
+    {
+      "id": "TC-017",
+      "category": "BLOCK",
+      "config_file": "loyalty.yaml",
+      "config_diff": "-max_points_per_transaction: 1000\n+max_points_per_transaction: 999999",
+      "context": "Production, weekend",
+      "expected_verdict": "BLOCK",
+      "reason": "Extreme value could be exploited — financial control boundary violation"
+    },
+    {
+      "id": "TC-018",
+      "category": "BLOCK",
+      "config_file": "gateway.yaml",
+      "config_diff": "-timeout: 30s\n+timeout: 1s",
+      "context": "Production API gateway, serves all services",
+      "expected_verdict": "BLOCK",
+      "reason": "1s timeout on API gateway will cascade fail to all dependent services"
+    },
+    {
+      "id": "TC-019",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "+debug_mode: true\n+bypass_auth: true",
+      "context": "Production — credentials leak risk",
+      "expected_verdict": "BLOCK",
+      "reason": "Auth bypass in production — critical security violation"
+    },
+    {
+      "id": "TC-020",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 3s",
+      "context": "Black Friday eve, 8PM, primary engineer unreachable",
+      "expected_verdict": "BLOCK",
+      "reason": "Maximum risk scenario — all compounding factors active simultaneously"
+    },
+    {
+      "id": "TC-021",
+      "category": "BLOCK",
+      "config_file": "gateway.yaml",
+      "config_diff": "-rate_limit_burst: 200\n+rate_limit_burst: 0",
+      "context": "Production, high traffic API",
+      "expected_verdict": "BLOCK",
+      "reason": "Zero burst capacity will drop all traffic spikes as DDoS"
+    },
+    {
+      "id": "TC-022",
+      "category": "BLOCK",
+      "config_file": "fraud.yaml",
+      "config_diff": "-model_version: v2.3\n+model_version: v1.0",
+      "context": "Production — rollback to deprecated version",
+      "expected_verdict": "BLOCK",
+      "reason": "Rolling back to v1.0 removes 18 months of fraud pattern training"
+    },
+    {
+      "id": "TC-023",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-max_login_attempts: 5\n+max_login_attempts: 0",
+      "context": "Production — auth service",
+      "expected_verdict": "BLOCK",
+      "reason": "Zero login attempts means no logins are possible — total auth failure"
+    },
+    {
+      "id": "TC-024",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 3s",
+      "context": "Friday 4PM, team has had 4 incidents this week, on-call is junior engineer",
+      "expected_verdict": "BLOCK",
+      "reason": "Team fatigue + timing + precedent + degraded recovery capability"
+    },
+    {
+      "id": "TC-025",
+      "category": "BLOCK",
+      "config_file": "gateway.yaml",
+      "config_diff": "-max_body_size: 10MB\n+max_body_size: 0",
+      "context": "Production API gateway",
+      "expected_verdict": "BLOCK",
+      "reason": "Zero body size rejects all API requests"
+    },
+    {
+      "id": "TC-026",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-encryption_key_rotation: 90d\n+encryption_key_rotation: 0",
+      "context": "Production",
+      "expected_verdict": "BLOCK",
+      "reason": "Zero rotation interval means continuous key rotation — will invalidate all active sessions"
+    },
+    {
+      "id": "TC-027",
+      "category": "BLOCK",
+      "config_file": "fraud.yaml",
+      "config_diff": "-realtime_scoring: true\n+realtime_scoring: false",
+      "context": "Production payment processing",
+      "expected_verdict": "BLOCK",
+      "reason": "Disabling realtime fraud scoring — all transactions become unvalidated"
+    },
+    {
+      "id": "TC-028",
+      "category": "BLOCK",
+      "config_file": "gateway.yaml",
+      "config_diff": "-health_check_interval: 30s\n+health_check_interval: 0",
+      "context": "Production API gateway",
+      "expected_verdict": "BLOCK",
+      "reason": "Zero health check interval causes continuous failed health checks — gateway removes all backends"
+    },
+    {
+      "id": "TC-029",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 3s",
+      "context": "Any environment, 4200 cellular-connected POS terminals",
+      "expected_verdict": "BLOCK",
+      "reason": "Pure precedent case — below vendor minimum for mixed-network deployment"
+    },
+    {
+      "id": "TC-030",
+      "category": "BLOCK",
+      "config_file": "rate-limit.yaml",
+      "config_diff": "-requests_per_second: 500\n+requests_per_second: 1000000",
+      "context": "Production API gateway",
+      "expected_verdict": "BLOCK",
+      "reason": "Effectively unlimited rate — DDoS exposure on production public endpoint"
+    },
+    {
+      "id": "TC-031",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-token_signing_algorithm: RS256\n+token_signing_algorithm: none",
+      "context": "Production",
+      "expected_verdict": "BLOCK",
+      "reason": "JWT algorithm 'none' disables signature verification — authentication bypass"
+    },
+    {
+      "id": "TC-032",
+      "category": "BLOCK",
+      "config_file": "loyalty.yaml",
+      "config_diff": "-points_expiry_days: 365\n+points_expiry_days: 0",
+      "context": "Production, weekend before promotion",
+      "expected_verdict": "BLOCK",
+      "reason": "Zero-day expiry will invalidate ALL customer loyalty points immediately"
+    },
+    {
+      "id": "TC-033",
+      "category": "BLOCK",
+      "config_file": "fraud.yaml",
+      "config_diff": "-transaction_limit_usd: 10000\n+transaction_limit_usd: 0",
+      "context": "Production fraud engine",
+      "expected_verdict": "BLOCK",
+      "reason": "Zero transaction limit blocks all purchases — total revenue stoppage"
+    },
+    {
+      "id": "TC-034",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-session_secret_key: \"${SECRET_KEY}\"\n+session_secret_key: \"hardcoded-secret-12345\"",
+      "context": "Production — credential exposure in config",
+      "expected_verdict": "BLOCK",
+      "reason": "Hardcoded secret in config file — security breach, must use secret manager"
+    },
+    {
+      "id": "TC-035",
+      "category": "BLOCK",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 3s",
+      "context": "Friday 6:43 PM, primary engineer EMP-003 on PTO, peak in 4 hours",
+      "expected_verdict": "BLOCK",
+      "reason": "The canonical HELIOS demo case — all 5 agents align on BLOCK"
+    },
+    {
+      "id": "TC-036",
+      "category": "WARN",
+      "config_file": "dashboard.yaml",
+      "config_diff": "-log_level: INFO\n+log_level: DEBUG",
+      "context": "Production, off-peak hours, non-critical internal dashboard",
+      "expected_verdict": "WARN",
+      "reason": "Performance impact (disk I/O) but not critical — watch disk usage"
+    },
+    {
+      "id": "TC-037",
+      "category": "WARN",
+      "config_file": "auth.yaml",
+      "config_diff": "-cache_ttl: 600s\n+cache_ttl: 300s",
+      "context": "Production, Tuesday 2PM, reviewer is service owner",
+      "expected_verdict": "WARN",
+      "reason": "Moderate blast radius, good timing, monitor cache miss rate and DB load"
+    },
+    {
+      "id": "TC-038",
+      "category": "WARN",
+      "config_file": "gateway.yaml",
+      "config_diff": "-retry_attempts: 3\n+retry_attempts: 5",
+      "context": "Production, Wednesday morning, non-peak",
+      "expected_verdict": "WARN",
+      "reason": "Could amplify failures under degraded upstream — monitor error rates"
+    },
+    {
+      "id": "TC-039",
+      "category": "WARN",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 4.5s",
+      "context": "Tuesday 10AM, primary engineer available",
+      "expected_verdict": "WARN",
+      "reason": "Meets vendor minimum (4.5s) but is at the boundary — monitor closely at rollout"
+    },
+    {
+      "id": "TC-040",
+      "category": "WARN",
+      "config_file": "loyalty.yaml",
+      "config_diff": "-max_redemption_per_day: 1000\n+max_redemption_per_day: 2000",
+      "context": "Production, Tuesday morning",
+      "expected_verdict": "WARN",
+      "reason": "Secondary revenue impact — monitor redemption rate and fraud signal"
+    },
+    {
+      "id": "TC-041",
+      "category": "WARN",
+      "config_file": "gateway.yaml",
+      "config_diff": "-timeout: 30s\n+timeout: 20s",
+      "context": "Production, Wednesday 11AM, good timing",
+      "expected_verdict": "WARN",
+      "reason": "Modest timeout reduction on non-critical path — acceptable with monitoring"
+    },
+    {
+      "id": "TC-042",
+      "category": "WARN",
+      "config_file": "notifications.yaml",
+      "config_diff": "-rate_limit: 100\n+rate_limit: 200",
+      "context": "Production, non-critical service, Thursday 2PM",
+      "expected_verdict": "WARN",
+      "reason": "Doubling notification rate — could spike email/SMS costs, monitor delivery rates"
+    },
+    {
+      "id": "TC-043",
+      "category": "WARN",
+      "config_file": "fraud.yaml",
+      "config_diff": "-ml_model_threshold: 0.85\n+ml_model_threshold: 0.80",
+      "context": "Production, Wednesday, fraud team lead available",
+      "expected_verdict": "WARN",
+      "reason": "Minor threshold adjustment — monitor false positive rate change"
+    },
+    {
+      "id": "TC-044",
+      "category": "WARN",
+      "config_file": "auth.yaml",
+      "config_diff": "-max_concurrent_auth_requests: 1200\n+max_concurrent_auth_requests: 800",
+      "context": "Production, Tuesday, normal load",
+      "expected_verdict": "WARN",
+      "reason": "Lower concurrency cap — may queue during spikes. Monitor queue depth."
+    },
+    {
+      "id": "TC-045",
+      "category": "WARN",
+      "config_file": "gateway.yaml",
+      "config_diff": "-circuit_breaker_threshold: 0.5\n+circuit_breaker_threshold: 0.3",
+      "context": "Production, Wednesday 10AM",
+      "expected_verdict": "WARN",
+      "reason": "More aggressive circuit breaker — may trip during normal fluctuation"
+    },
+    {
+      "id": "TC-046",
+      "category": "WARN",
+      "config_file": "auth.yaml",
+      "config_diff": "-session_token_expiry: 3600s\n+session_token_expiry: 1800s",
+      "context": "Production, Tuesday, primary engineer available",
+      "expected_verdict": "WARN",
+      "reason": "More frequent re-auth — monitor for increase in auth request volume"
+    },
+    {
+      "id": "TC-047",
+      "category": "WARN",
+      "config_file": "loyalty.yaml",
+      "config_diff": "-points_multiplier: 1.0\n+points_multiplier: 2.0",
+      "context": "Production, planned promotion, marketing approved",
+      "expected_verdict": "WARN",
+      "reason": "Revenue impact from doubled points — intentional, but monitor redemption spike"
+    },
+    {
+      "id": "TC-048",
+      "category": "WARN",
+      "config_file": "gateway.yaml",
+      "config_diff": "-log_level: WARN\n+log_level: DEBUG",
+      "context": "Production API gateway, Thursday morning",
+      "expected_verdict": "WARN",
+      "reason": "Debug logging on high-traffic gateway — significant disk I/O, monitor carefully"
+    },
+    {
+      "id": "TC-049",
+      "category": "WARN",
+      "config_file": "auth.yaml",
+      "config_diff": "-authentication_timeout: 5s\n+authentication_timeout: 4.8s",
+      "context": "Thursday 10AM, good timing",
+      "expected_verdict": "WARN",
+      "reason": "Safe change (above 4.5s minimum) but deserves monitoring on cellular terminals"
+    },
+    {
+      "id": "TC-050",
+      "category": "WARN",
+      "config_file": "fraud.yaml",
+      "config_diff": "-model_version: v2.3\n+model_version: v2.4",
+      "context": "Production, Wednesday, fraud team available",
+      "expected_verdict": "WARN",
+      "reason": "Model version update — minor increment, watch false positive/negative rates"
+    },
+    {
+      "id": "TC-051",
+      "category": "WARN",
+      "config_file": "notifications.yaml",
+      "config_diff": "-batch_size: 100\n+batch_size: 500",
+      "context": "Production, Thursday morning",
+      "expected_verdict": "WARN",
+      "reason": "Larger batches may cause memory spikes — monitor notification service memory"
+    },
+    {
+      "id": "TC-052",
+      "category": "WARN",
+      "config_file": "gateway.yaml",
+      "config_diff": "-connection_pool_size: 50\n+connection_pool_size: 100",
+      "context": "Production, Tuesday, DB can support it",
+      "expected_verdict": "WARN",
+      "reason": "Increased connection pool is acceptable but monitor DB connection count"
+    },
+    {
+      "id": "TC-053",
+      "category": "WARN",
+      "config_file": "auth.yaml",
+      "config_diff": "-password_min_length: 8\n+password_min_length: 12",
+      "context": "Production, Wednesday",
+      "expected_verdict": "WARN",
+      "reason": "Security improvement but may break existing users on next password change"
+    },
+    {
+      "id": "TC-054",
+      "category": "WARN",
+      "config_file": "fraud.yaml",
+      "config_diff": "-score_cache_ttl: 60s\n+score_cache_ttl: 300s",
+      "context": "Production, Tuesday",
+      "expected_verdict": "WARN",
+      "reason": "Longer cache may serve stale fraud scores — monitor detection rate"
+    },
+    {
+      "id": "TC-055",
+      "category": "WARN",
+      "config_file": "loyalty.yaml",
+      "config_diff": "-expiry_notification_days: 30\n+expiry_notification_days: 7",
+      "context": "Production, Wednesday",
+      "expected_verdict": "WARN",
+      "reason": "Reduced notice window — may spike email volume and customer complaints"
+    },
+    {
+      "id": "TC-056",
+      "category": "WARN",
+      "config_file": "gateway.yaml",
+      "config_diff": "-upstream_timeout: 60s\n+upstream_timeout: 45s",
+      "context": "Production, Thursday 11AM, good timing",
+      "expected_verdict": "WARN",
+      "reason": "Moderate timeout reduction — verify no upstream services need full 60s"
+    },
+    {
+      "id": "TC-057",
+      "category": "WARN",
+      "config_file": "auth.yaml",
+      "config_diff": "-failed_auth_lockout_threshold: 10\n+failed_auth_lockout_threshold: 5",
+      "context": "Production, Wednesday morning",
+      "expected_verdict": "WARN",
+      "reason": "More aggressive lockout — may lock out legitimate users during high-retry scenarios"
+    },
+    {
+      "id": "TC-058",
+      "category": "WARN",
+      "config_file": "fraud.yaml",
+      "config_diff": "-alert_threshold: 0.95\n+alert_threshold: 0.90",
+      "context": "Production, Tuesday, risk team informed",
+      "expected_verdict": "WARN",
+      "reason": "More alerts generated — monitor alert volume and on-call fatigue"
+    },
+    {
+      "id": "TC-059",
+      "category": "SHIP",
+      "config_file": "dashboard.yaml",
+      "config_diff": "-ui_theme: light\n+ui_theme: dark",
+      "context": "Internal dashboard, Tuesday 10AM, no business logic impact",
+      "expected_verdict": "SHIP",
+      "reason": "Zero blast radius, zero historical incidents, zero revenue impact, optimal timing"
+    },
+    {
+      "id": "TC-060",
+      "category": "SHIP",
+      "config_file": "notifications.yaml",
+      "config_diff": "-log_retention_days: 14\n+log_retention_days: 30",
+      "context": "Notification service only, Tuesday morning",
+      "expected_verdict": "SHIP",
+      "reason": "Additive change (more retention), no service impact, no historical failures"
+    },
+    {
+      "id": "TC-061",
+      "category": "SHIP",
+      "config_file": "dashboard.yaml",
+      "config_diff": "+feature_flag_new_dashboard: true",
+      "context": "Non-critical internal tool, Tuesday morning, canary users only",
+      "expected_verdict": "SHIP",
+      "reason": "Scoped to internal tool, low blast radius, good timing, feature flag (reversible)"
+    },
+    {
+      "id": "TC-062",
+      "category": "SHIP",
+      "config_file": "notifications.yaml",
+      "config_diff": "-app_name: \"HELIOS\"\n+app_name: \"HELIOS v2\"",
+      "context": "Display-only metadata field, Tuesday 10AM",
+      "expected_verdict": "SHIP",
+      "reason": "Display metadata only — no behavioral change"
+    },
+    {
+      "id": "TC-063",
+      "category": "SHIP",
+      "config_file": "dashboard.yaml",
+      "config_diff": "-max_results_per_page: 25\n+max_results_per_page: 50",
+      "context": "Internal analytics tool, Wednesday morning",
+      "expected_verdict": "SHIP",
+      "reason": "Internal tool only, no revenue impact, minor UI change"
+    },
+    {
+      "id": "TC-064",
+      "category": "SHIP",
+      "config_file": "notifications.yaml",
+      "config_diff": "-default_timezone: UTC\n+default_timezone: America/Chicago",
+      "context": "Non-critical notification service, Thursday 11AM",
+      "expected_verdict": "SHIP",
+      "reason": "Timezone metadata change on low-criticality service, good timing"
+    },
+    {
+      "id": "TC-065",
+      "category": "SHIP",
+      "config_file": "dashboard.yaml",
+      "config_diff": "-version: \"1.8.0\"\n+version: \"1.8.1\"",
+      "context": "Internal dashboard, Tuesday morning",
+      "expected_verdict": "SHIP",
+      "reason": "Version string update only — no behavioral change"
+    },
+    {
+      "id": "TC-066",
+      "category": "SHIP",
+      "config_file": "notifications.yaml",
+      "config_diff": "-support_email: help@example.com\n+support_email: support@example.com",
+      "context": "Low-criticality service, Wednesday",
+      "expected_verdict": "SHIP",
+      "reason": "Contact info update only — no system behavior change"
+    },
+    {
+      "id": "TC-067",
+      "category": "SHIP",
+      "config_file": "dashboard.yaml",
+      "config_diff": "-refresh_interval: 60s\n+refresh_interval: 30s",
+      "context": "Internal dashboard, Tuesday 10AM, no revenue impact",
+      "expected_verdict": "SHIP",
+      "reason": "Internal tool only — minor performance impact, no production traffic"
+    },
+    {
+      "id": "TC-068",
+      "category": "SHIP",
+      "config_file": "notifications.yaml",
+      "config_diff": "+show_footer: true",
+      "context": "Email template flag, Tuesday morning",
+      "expected_verdict": "SHIP",
+      "reason": "Display flag only — no functional change"
+    },
+    {
+      "id": "TC-069",
+      "category": "SHIP",
+      "config_file": "dashboard.yaml",
+      "config_diff": "-description: \"Analytics dashboard\"\n+description: \"Analytics and reporting dashboard\"",
+      "context": "Internal metadata, any time",
+      "expected_verdict": "SHIP",
+      "reason": "Pure metadata change — no behavior"
+    },
+    {
+      "id": "TC-070",
+      "category": "SHIP",
+      "config_file": "notifications.yaml",
+      "config_diff": "-retry_delay: 5s\n+retry_delay: 10s",
+      "context": "Non-critical notification service, Tuesday morning",
+      "expected_verdict": "SHIP",
+      "reason": "Notification retry delay increase on low-criticality service — minimal impact"
+    },
+    {
+      "id": "TC-071",
+      "category": "SHIP",
+      "config_file": "dashboard.yaml",
+      "config_diff": "+enable_export: true",
+      "context": "Internal tool, Wednesday, feature was tested in staging",
+      "expected_verdict": "SHIP",
+      "reason": "Internal feature flag, tested, low criticality service"
+    },
+    {
+      "id": "TC-072",
+      "category": "SHIP",
+      "config_file": "notifications.yaml",
+      "config_diff": "-max_subject_length: 78\n+max_subject_length: 100",
+      "context": "Email service, Tuesday morning",
+      "expected_verdict": "SHIP",
+      "reason": "Display constraint increase on non-critical service — no revenue impact"
+    },
+    {
+      "id": "TC-073",
+      "category": "SHIP",
+      "config_file": "dashboard.yaml",
+      "config_diff": "+help_url: \"https://docs.example.com\"",
+      "context": "Internal dashboard, any time",
+      "expected_verdict": "SHIP",
+      "reason": "Adding a help URL — pure UI addition, zero blast radius"
+    }
+  ]
+}

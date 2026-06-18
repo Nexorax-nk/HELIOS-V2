@@ -1,0 +1,33 @@
+name: HELIOS Self-Test — Config Safety Check
+
+on:
+  pull_request:
+    paths:
+      - '**.yaml'
+      - '**.yml'
+      - '**.json'
+      - '**.toml'
+      - '**.ini'
+      - '**.env'
+      - 'synthetic-data/**'
+      - 'knowledge-base/**'
+      - 'demo/**'
+
+jobs:
+  helios:
+    name: HELIOS Config Safety
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run HELIOS
+        uses: ./action
+        with:
+          helios_endpoint: ${{ secrets.HELIOS_ENDPOINT }}
+          environment: production
+          fail_on_block: 'true'
+          fail_on_stage: 'false'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

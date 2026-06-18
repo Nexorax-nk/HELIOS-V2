@@ -1,0 +1,65 @@
+name: HELIOS Config Safety
+on: [pull_request]
+
+jobs:
+  helios-evaluation:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Run HELIOS Pipeline
+        id: helios_run
+        env:
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          HELIOS_REASONING_MODEL: gpt-4o
+          HELIOS_ORACLE_MODEL: gpt-4o
+          PYTHONUTF8: 1
+        run: |
+          # Evaluate config and export raw JSON
+          python cli/helios.py evaluate demo/config_a.yaml --local --json > raw_result.json 2>&1 || exit_code=$?
+          
+          echo "exit_code=${exit_code:-0}" >> $GITHUB_OUTPUT
+          
+          # Convert JSON output into professional markdown
+          python scripts/format_pr_comment.py raw_result.json > comment_body.md
+          
+          # Print for action logs
+          cat comment_body.md
+          
+          # Format output for the comment step
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "report<<$EOF" >> $GITHUB_OUTPUT
+          cat comment_body.md >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+          
+      - name: Post HELIOS Report to PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = `${{ steps.helios_run.outputs.report }}`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            })
+            
+      - name: Enforce HELIOS Verdict
+        run: |
+          if [ "${{ steps.helios_run.outputs.exit_code }}" -ne 0 ]; then
+            echo "::error::HELIOS returned a BLOCK or STAGE verdict. This configuration is unsafe to deploy."
+            exit 1
+          fi

@@ -1,0 +1,112 @@
+{
+  "services": [
+    {
+      "id": "SVC-001",
+      "name": "POS Authentication Service",
+      "description": "Handles authentication for all point-of-sale terminals across retail locations",
+      "config_files": ["auth.yaml", "auth.json"],
+      "criticality": "CRITICAL",
+      "endpoints": 4200,
+      "network_profile": {
+        "low_bandwidth_pct": 43,
+        "avg_latency_ms": 180,
+        "packet_loss_pct": 2.1
+      },
+      "dependencies": ["SVC-002", "SVC-005"],
+      "owned_by": "DEPT-001",
+      "slo_availability": 99.95,
+      "revenue_tier": "PRIMARY",
+      "on_call_team": "TEAM-B"
+    },
+    {
+      "id": "SVC-002",
+      "name": "API Gateway",
+      "description": "Central API gateway routing all internal and external traffic",
+      "config_files": ["gateway.yaml", "rate-limit.yaml"],
+      "criticality": "HIGH",
+      "endpoints": 1,
+      "network_profile": {
+        "low_bandwidth_pct": 0,
+        "avg_latency_ms": 5,
+        "packet_loss_pct": 0
+      },
+      "dependencies": [],
+      "owned_by": "DEPT-002",
+      "slo_availability": 99.99,
+      "revenue_tier": "PRIMARY",
+      "on_call_team": "TEAM-A"
+    },
+    {
+      "id": "SVC-003",
+      "name": "Internal Dashboard",
+      "description": "Internal analytics dashboard for operations teams",
+      "config_files": ["dashboard.yaml", "dashboard.json"],
+      "criticality": "LOW",
+      "endpoints": 50,
+      "network_profile": {
+        "low_bandwidth_pct": 0,
+        "avg_latency_ms": 20,
+        "packet_loss_pct": 0
+      },
+      "dependencies": ["SVC-004"],
+      "owned_by": "DEPT-003",
+      "slo_availability": 99.0,
+      "revenue_tier": "NONE",
+      "on_call_team": "TEAM-C"
+    },
+    {
+      "id": "SVC-004",
+      "name": "Loyalty & Rewards Service",
+      "description": "Manages customer loyalty points, redemptions, and reward programs",
+      "config_files": ["loyalty.yaml"],
+      "criticality": "HIGH",
+      "endpoints": 800,
+      "network_profile": {
+        "low_bandwidth_pct": 5,
+        "avg_latency_ms": 45,
+        "packet_loss_pct": 0.2
+      },
+      "dependencies": ["SVC-001", "SVC-005"],
+      "owned_by": "DEPT-001",
+      "slo_availability": 99.9,
+      "revenue_tier": "SECONDARY",
+      "on_call_team": "TEAM-B"
+    },
+    {
+      "id": "SVC-005",
+      "name": "Fraud Detection Engine",
+      "description": "Real-time fraud scoring and transaction validation",
+      "config_files": ["fraud.yaml", "ml-config.yaml"],
+      "criticality": "CRITICAL",
+      "endpoints": 3,
+      "network_profile": {
+        "low_bandwidth_pct": 0,
+        "avg_latency_ms": 8,
+        "packet_loss_pct": 0
+      },
+      "dependencies": [],
+      "owned_by": "DEPT-004",
+      "slo_availability": 99.99,
+      "revenue_tier": "COMPLIANCE",
+      "on_call_team": "TEAM-D"
+    },
+    {
+      "id": "SVC-006",
+      "name": "Notification Service",
+      "description": "Email, SMS, and push notification delivery",
+      "config_files": ["notifications.yaml"],
+      "criticality": "MEDIUM",
+      "endpoints": 5,
+      "network_profile": {
+        "low_bandwidth_pct": 0,
+        "avg_latency_ms": 30,
+        "packet_loss_pct": 0
+      },
+      "dependencies": [],
+      "owned_by": "DEPT-003",
+      "slo_availability": 99.5,
+      "revenue_tier": "NONE",
+      "on_call_team": "TEAM-C"
+    }
+  ]
+}

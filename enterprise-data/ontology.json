@@ -1,0 +1,111 @@
+{
+  "entities": {
+    "departments": [
+      {
+        "id": "DEPT-001",
+        "name": "Retail Operations",
+        "services": ["SVC-001", "SVC-004"],
+        "revenue_tier": "PRIMARY",
+        "annual_revenue_contribution": 180000000,
+        "peak_hours": "16:00-22:00",
+        "peak_days": ["Friday", "Saturday", "Sunday"],
+        "peak_traffic_multiplier": 3.2
+      },
+      {
+        "id": "DEPT-002",
+        "name": "Platform & Infrastructure",
+        "services": ["SVC-002"],
+        "revenue_tier": "SHARED",
+        "annual_revenue_contribution": 0,
+        "peak_hours": "09:00-18:00",
+        "peak_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "peak_traffic_multiplier": 1.5
+      },
+      {
+        "id": "DEPT-003",
+        "name": "Customer Experience",
+        "services": ["SVC-003", "SVC-006"],
+        "revenue_tier": "SECONDARY",
+        "annual_revenue_contribution": 12000000,
+        "peak_hours": "10:00-20:00",
+        "peak_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "peak_traffic_multiplier": 1.8
+      },
+      {
+        "id": "DEPT-004",
+        "name": "Risk & Compliance",
+        "services": ["SVC-005"],
+        "revenue_tier": "COMPLIANCE",
+        "annual_revenue_contribution": 0,
+        "peak_hours": "00:00-23:59",
+        "peak_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "peak_traffic_multiplier": 1.0
+      }
+    ],
+    "business_functions": [
+      {
+        "id": "BF-001",
+        "name": "In-store POS Checkout",
+        "services": ["SVC-001"],
+        "department": "DEPT-001",
+        "revenue_per_hour_peak": 200000,
+        "revenue_per_hour_offpeak": 62000,
+        "failure_tolerance": "ZERO",
+        "description": "Primary transaction processing at physical retail locations"
+      },
+      {
+        "id": "BF-002",
+        "name": "Loyalty Redemption",
+        "services": ["SVC-004"],
+        "department": "DEPT-001",
+        "revenue_per_hour_peak": 45000,
+        "revenue_per_hour_offpeak": 14000,
+        "failure_tolerance": "LOW",
+        "description": "Customer loyalty point earning and redemption at checkout"
+      },
+      {
+        "id": "BF-003",
+        "name": "API Traffic Routing",
+        "services": ["SVC-002"],
+        "department": "DEPT-002",
+        "revenue_per_hour_peak": 0,
+        "revenue_per_hour_offpeak": 0,
+        "failure_tolerance": "VERY_LOW",
+        "description": "Central API gateway — all services depend on this"
+      },
+      {
+        "id": "BF-004",
+        "name": "Fraud Prevention",
+        "services": ["SVC-005"],
+        "department": "DEPT-004",
+        "revenue_per_hour_peak": 0,
+        "revenue_per_hour_offpeak": 0,
+        "failure_tolerance": "ZERO",
+        "description": "Regulatory compliance — all transactions must pass fraud check"
+      }
+    ]
+  },
+  "relationships": [
+    {"from": "auth.yaml", "to": "SVC-001", "type": "CONTROLS"},
+    {"from": "gateway.yaml", "to": "SVC-002", "type": "CONTROLS"},
+    {"from": "rate-limit.yaml", "to": "SVC-002", "type": "CONTROLS"},
+    {"from": "loyalty.yaml", "to": "SVC-004", "type": "CONTROLS"},
+    {"from": "fraud.yaml", "to": "SVC-005", "type": "CONTROLS"},
+    {"from": "dashboard.yaml", "to": "SVC-003", "type": "CONTROLS"},
+    {"from": "notifications.yaml", "to": "SVC-006", "type": "CONTROLS"},
+    {"from": "SVC-001", "to": "DEPT-001", "type": "OWNED_BY"},
+    {"from": "SVC-002", "to": "DEPT-002", "type": "OWNED_BY"},
+    {"from": "SVC-003", "to": "DEPT-003", "type": "OWNED_BY"},
+    {"from": "SVC-004", "to": "DEPT-001", "type": "OWNED_BY"},
+    {"from": "SVC-005", "to": "DEPT-004", "type": "OWNED_BY"},
+    {"from": "SVC-006", "to": "DEPT-003", "type": "OWNED_BY"},
+    {"from": "DEPT-001", "to": "BF-001", "type": "OPERATES"},
+    {"from": "DEPT-001", "to": "BF-002", "type": "OPERATES"},
+    {"from": "DEPT-002", "to": "BF-003", "type": "OPERATES"},
+    {"from": "DEPT-004", "to": "BF-004", "type": "OPERATES"},
+    {"from": "SVC-001", "to": "SVC-002", "type": "DEPENDS_ON"},
+    {"from": "SVC-001", "to": "SVC-005", "type": "DEPENDS_ON"},
+    {"from": "SVC-004", "to": "SVC-001", "type": "DEPENDS_ON"},
+    {"from": "SVC-004", "to": "SVC-005", "type": "DEPENDS_ON"}
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "teams": {
+    "TEAM-A": {
+      "name": "Platform Team",
+      "incidents_this_week": 1,
+      "incidents_this_month": 4,
+      "on_call_rotation": ["EMP-001", "EMP-002"],
+      "avg_mttr_hours": 1.2,
+      "deployment_freeze_active": false
+    },
+    "TEAM-B": {
+      "name": "Retail Infrastructure Team",
+      "incidents_this_week": 3,
+      "incidents_this_month": 7,
+      "on_call_rotation": ["EMP-004"],
+      "avg_mttr_hours": 2.8,
+      "deployment_freeze_active": false,
+      "note": "Primary expert EMP-003 on PTO until Monday"
+    },
+    "TEAM-C": {
+      "name": "Customer Experience Team",
+      "incidents_this_week": 0,
+      "incidents_this_month": 1,
+      "on_call_rotation": ["EMP-005"],
+      "avg_mttr_hours": 0.5,
+      "deployment_freeze_active": false
+    },
+    "TEAM-D": {
+      "name": "Risk & Compliance Team",
+      "incidents_this_week": 0,
+      "incidents_this_month": 0,
+      "on_call_rotation": ["EMP-006"],
+      "avg_mttr_hours": 0.8,
+      "deployment_freeze_active": false
+    }
+  },
+  "upcoming_calendar_events": [
+    {
+      "id": "EVT-001",
+      "name": "Q4 Earnings Review",
+      "date": "2026-06-16",
+      "time": "09:00",
+      "type": "BUSINESS_CRITICAL",
+      "risk_multiplier": 1.8,
+      "description": "Board-level review of Q4 financial results. All systems must be green.",
+      "deployment_freeze_window": "2026-06-14T18:00 to 2026-06-16T18:00"
+    },
+    {
+      "id": "EVT-002",
+      "name": "Father's Day Weekend Peak",
+      "date": "2026-06-15",
+      "time": "10:00",
+      "type": "TRAFFIC_SPIKE",
+      "risk_multiplier": 2.2,
+      "description": "Father's Day is historically our second-highest retail traffic day of the year.",
+      "deployment_freeze_window": "2026-06-13T12:00 to 2026-06-16T00:00"
+    },
+    {
+      "id": "EVT-003",
+      "name": "Annual Security Audit",
+      "date": "2026-06-20",
+      "time": "09:00",
+      "type": "COMPLIANCE",
+      "risk_multiplier": 1.3,
+      "description": "External SOC 2 auditors review system configurations and access logs.",
+      "deployment_freeze_window": null
+    }
+  ],
+  "traffic_patterns": {
+    "hourly_multipliers": {
+      "00": 0.2, "01": 0.15, "02": 0.1, "03": 0.1, "04": 0.12,
+      "05": 0.2, "06": 0.4, "07": 0.6, "08": 0.8, "09": 1.0,
+      "10": 1.2, "11": 1.4, "12": 1.6, "13": 1.5, "14": 1.4,
+      "15": 1.5, "16": 1.8, "17": 2.2, "18": 2.8, "19": 3.2,
+      "20": 3.0, "21": 2.5, "22": 1.8, "23": 0.9
+    },
+    "daily_multipliers": {
+      "Monday": 0.9, "Tuesday": 0.85, "Wednesday": 0.9,
+      "Thursday": 1.0, "Friday": 1.4, "Saturday": 1.8, "Sunday": 1.5
+    },
+    "peak_window_start": "18:00",
+    "peak_window_end": "21:00",
+    "peak_days": ["Friday", "Saturday", "Sunday"]
+  },
+  "deployment_risk_windows": {
+    "safe_windows": [
+      "Tuesday 09:00-15:00",
+      "Wednesday 09:00-15:00",
+      "Thursday 09:00-14:00"
+    ],
+    "risky_windows": [
+      "Friday after 14:00",
+      "Saturday all day",
+      "Sunday all day",
+      "Any day after 18:00",
+      "Within 2 hours of any calendar event"
+    ]
+  }
+}

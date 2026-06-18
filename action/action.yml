@@ -1,0 +1,144 @@
+name: 'HELIOS Config Safety Check'
+description: 'Run HELIOS config intelligence pipeline on changed config files in a PR'
+author: 'HELIOS Team'
+
+inputs:
+  config_path:
+    description: 'Path to config directory or file to evaluate'
+    required: false
+    default: './'
+  environment:
+    description: 'Target environment (production, staging, development)'
+    required: false
+    default: 'production'
+  helios_endpoint:
+    description: 'HELIOS API endpoint URL'
+    required: true
+  helios_token:
+    description: 'HELIOS API authentication token'
+    required: false
+    default: ''
+  fail_on_block:
+    description: 'Fail the action if HELIOS verdict is BLOCK'
+    required: false
+    default: 'true'
+  fail_on_stage:
+    description: 'Fail the action if HELIOS verdict is STAGE'
+    required: false
+    default: 'false'
+
+outputs:
+  verdict:
+    description: 'HELIOS verdict: SHIP, WARN, STAGE, or BLOCK'
+    value: ${{ steps.helios.outputs.verdict }}
+  risk_score:
+    description: 'Risk score (0-100)'
+    value: ${{ steps.helios.outputs.risk_score }}
+  eval_id:
+    description: 'HELIOS evaluation ID'
+    value: ${{ steps.helios.outputs.eval_id }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get changed config files
+      id: changed_files
+      uses: tj-actions/changed-files@v44
+      with:
+        files: |
+          **/*.yaml
+          **/*.yml
+          **/*.json
+          **/*.toml
+          **/*.ini
+          **/*.env
+          **/*.conf
+          **/config/**
+
+    - name: Run HELIOS evaluation
+      id: helios
+      if: steps.changed_files.outputs.any_changed == 'true'
+      shell: bash
+      env:
+        HELIOS_ENDPOINT: ${{ inputs.helios_endpoint }}
+        HELIOS_TOKEN: ${{ inputs.helios_token }}
+        CHANGED_FILES: ${{ steps.changed_files.outputs.all_changed_files }}
+        ENVIRONMENT: ${{ inputs.environment }}
+      run: |
+        echo "HELIOS: Evaluating changed config files..."
+        echo "Files changed: $CHANGED_FILES"
+        
+        # Get the first changed config file
+        FIRST_FILE=$(echo $CHANGED_FILES | tr ' ' '\n' | head -1)
+        echo "Primary config file: $FIRST_FILE"
+        
+        # Get git diff for the file
+        git fetch origin ${{ github.base_ref }} 2>/dev/null || true
+        DIFF=$(git diff origin/${{ github.base_ref }}...HEAD -- "$FIRST_FILE" 2>/dev/null || git show HEAD:"$FIRST_FILE" 2>/dev/null | sed 's/^/+/' || echo "")
+        NEW_CONTENT=$(cat "$FIRST_FILE" 2>/dev/null || echo "")
+        
+        # Call HELIOS API
+        PAYLOAD=$(jq -n \
+          --arg diff "$DIFF" \
+          --arg file "$FIRST_FILE" \
+          --arg env "$ENVIRONMENT" \
+          --arg content "$NEW_CONTENT" \
+          '{
+            config_diff: $diff,
+            config_file: $file,
+            environment: $env,
+            new_config: $content,
+            pr_url: "${{ github.event.pull_request.html_url }}",
+            pr_number: ${{ github.event.number }},
+            repo_full_name: "${{ github.repository }}"
+          }')
+        
+        AUTH_HEADER=""
+        if [ -n "$HELIOS_TOKEN" ]; then
+          AUTH_HEADER="-H 'Authorization: Bearer $HELIOS_TOKEN'"
+        fi
+        
+        RESPONSE=$(curl -s -X POST \
+          "$HELIOS_ENDPOINT/api/v1/evaluate" \
+          -H "Content-Type: application/json" \
+          $AUTH_HEADER \
+          -d "$PAYLOAD" \
+          --max-time 120)
+        
+        echo "HELIOS response received"
+        
+        VERDICT=$(echo "$RESPONSE" | jq -r '.arbiter.verdict // "WARN"')
+        RISK_SCORE=$(echo "$RESPONSE" | jq -r '.arbiter.risk_score // "50"')
+        EVAL_ID=$(echo "$RESPONSE" | jq -r '.eval_id // "unknown"')
+        SUMMARY=$(echo "$RESPONSE" | jq -r '.arbiter.summary // "Evaluation complete"')
+        
+        echo "verdict=$VERDICT" >> $GITHUB_OUTPUT
+        echo "risk_score=$RISK_SCORE" >> $GITHUB_OUTPUT
+        echo "eval_id=$EVAL_ID" >> $GITHUB_OUTPUT
+        
+        EMOJI="⚪"
+        case $VERDICT in
+          SHIP) EMOJI="🟢" ;;
+          WARN) EMOJI="🟡" ;;
+          STAGE) EMOJI="🟠" ;;
+          BLOCK) EMOJI="🔴" ;;
+        esac
+        
+        echo "::notice title=HELIOS Verdict: $VERDICT::$EMOJI $VERDICT (risk=$RISK_SCORE/100) — $SUMMARY"
+        
+        if [ "$VERDICT" = "BLOCK" ] && [ "${{ inputs.fail_on_block }}" = "true" ]; then
+          echo "::error::HELIOS BLOCK verdict. This config change is unsafe for production deployment."
+          exit 1
+        fi
+        
+        if [ "$VERDICT" = "STAGE" ] && [ "${{ inputs.fail_on_stage }}" = "true" ]; then
+          echo "::warning::HELIOS STAGE verdict. Staged rollout required for this config change."
+          exit 1
+        fi
+
+    - name: Skip (no config changes)
+      if: steps.changed_files.outputs.any_changed != 'true'
+      shell: bash
+      run: |
+        echo "HELIOS: No config file changes detected in this PR — skipping evaluation."
+        echo "verdict=SKIP" >> $GITHUB_OUTPUT

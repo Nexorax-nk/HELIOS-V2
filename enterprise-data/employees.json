@@ -1,0 +1,80 @@
+[
+  {
+    "employee_id": "EMP-001",
+    "name": "Alex Rivera",
+    "role": "DevOps Engineer",
+    "team": "TEAM-A",
+    "expertise": ["api-gateway", "networking", "kubernetes"],
+    "configs_deployed_last_30d": 14,
+    "incidents_caused_last_90d": 1,
+    "on_call_this_week": true,
+    "pto_dates": [],
+    "avg_deployment_quality_score": 87,
+    "github_handle": "arivera-devops"
+  },
+  {
+    "employee_id": "EMP-002",
+    "name": "Jordan Kim",
+    "role": "Cloud Engineer",
+    "team": "TEAM-A",
+    "expertise": ["api-gateway", "rate-limiting", "cdn"],
+    "configs_deployed_last_30d": 8,
+    "incidents_caused_last_90d": 0,
+    "on_call_this_week": false,
+    "pto_dates": [],
+    "avg_deployment_quality_score": 96,
+    "github_handle": "jkim-cloud"
+  },
+  {
+    "employee_id": "EMP-003",
+    "name": "Sam Patel",
+    "role": "Platform Lead",
+    "team": "TEAM-B",
+    "expertise": ["auth-service", "api-gateway", "rate-limiting", "security"],
+    "configs_deployed_last_30d": 22,
+    "incidents_caused_last_90d": 0,
+    "on_call_this_week": false,
+    "pto_dates": ["2026-06-13", "2026-06-14", "2026-06-15", "2026-06-16"],
+    "avg_deployment_quality_score": 99,
+    "github_handle": "spatel-platform"
+  },
+  {
+    "employee_id": "EMP-004",
+    "name": "Casey Wong",
+    "role": "Site Reliability Engineer",
+    "team": "TEAM-B",
+    "expertise": ["pos-terminals", "auth-service", "networking"],
+    "configs_deployed_last_30d": 11,
+    "incidents_caused_last_90d": 2,
+    "on_call_this_week": true,
+    "pto_dates": [],
+    "avg_deployment_quality_score": 82,
+    "github_handle": "cwong-sre"
+  },
+  {
+    "employee_id": "EMP-005",
+    "name": "Morgan Lee",
+    "role": "Junior DevOps Engineer",
+    "team": "TEAM-C",
+    "expertise": ["notifications", "dashboard"],
+    "configs_deployed_last_30d": 3,
+    "incidents_caused_last_90d": 0,
+    "on_call_this_week": false,
+    "pto_dates": [],
+    "avg_deployment_quality_score": 91,
+    "github_handle": "mlee-devops"
+  },
+  {
+    "employee_id": "EMP-006",
+    "name": "Taylor Brooks",
+    "role": "Security Engineer",
+    "team": "TEAM-D",
+    "expertise": ["fraud-detection", "security", "ml-config", "compliance"],
+    "configs_deployed_last_30d": 6,
+    "incidents_caused_last_90d": 0,
+    "on_call_this_week": true,
+    "pto_dates": [],
+    "avg_deployment_quality_score": 98,
+    "github_handle": "tbrooks-security"
+  }
+]

@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_AUTHN_CREDENTIALS_FILE=none
+      - ANONYMIZED_TELEMETRY=false
+    restart: unless-stopped
+
+  helios:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - CHROMA_LOCAL=false
+    env_file:
+      - .env
+    depends_on:
+      - chromadb
+    restart: unless-stopped
+    command: uvicorn api.server:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  chroma_data:

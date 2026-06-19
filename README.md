@@ -155,7 +155,7 @@ graph TD
 
 SENTINEL does not just parse the diff — it *understands* it. It classifies the change into categories like `availability_tradeoff`, `security_downgrade`, `capacity_change`, `feature_toggle`, or `cosmetic`. This classification drives which evidence the downstream agents prioritize.
 
-### Agent 2: CHRONICLE — Historical Evidence (Foundry IQ)
+### Agent 2: CHRONICLE — Historical Evidence
 
 **Input:** SENTINEL report  
 **Output:** Historical incidents, vendor advisories, safe operating ranges, risk signal
@@ -167,7 +167,7 @@ CHRONICLE queries the organizational knowledge base — a ChromaDB vector store 
 - 2 vendor advisories (internal standards, CSA-2024-001)
 - 1 service runbook (auth-service)
 
-### Agent 3: MERIDIAN — Dependency & Blast Radius (Fabric IQ)
+### Agent 3: MERIDIAN — Dependency & Blast Radius
 
 **Input:** SENTINEL report  
 **Output:** Affected systems, endpoint counts, revenue at risk, cascade risk assessment
@@ -185,7 +185,7 @@ For `auth.yaml`, MERIDIAN discovers:
 - Revenue at risk: $125,000/hour at peak
 - Zero-tolerance system detected
 
-### Agent 4: CONTEXT — Organizational State (Work IQ)
+### Agent 4: CONTEXT — Organizational State
 
 **Input:** Evaluation request + SENTINEL report  
 **Output:** Deployment window risk, context risk score, recovery capability assessment
@@ -230,11 +230,11 @@ HELIOS utilizes the Band SDK to orchestrate its 6 agents. Rather than relying on
 
 *(Note: The enterprise data layers demonstrate real-world integrations within the Band framework.)*
 
-| IQ Layer | What HELIOS Uses It For | Local Implementation | Production Swap |
-|----------|------------------------|---------------------|-----------------|
-| **Foundry IQ** | CHRONICLE searches organizational knowledge — postmortems, advisories, runbooks — with semantic similarity and grounded citations | Foundry IQ SDK (with ChromaDB offline fallback) | Integrated via azure.ai.projects |
-| **Fabric IQ** | MERIDIAN traverses Config -> Service -> Department -> Revenue semantic graph to calculate blast radius and revenue impact | networkx directed graph from `synthetic-data/ontology.json` | Fabric IQ Semantic Entity API |
-| **Work IQ** | CONTEXT reads M365-style signals — calendar events, engineer PTO, team fatigue scores, hourly traffic patterns | JSON signal store from `synthetic-data/work_signals.json` | MS Graph API + Work IQ Signals |
+| Enterprise Layer | What HELIOS Uses It For | Local Implementation | Production Swap |
+|------------------|-------------------------|----------------------|-----------------|
+| **Knowledge Base** | CHRONICLE searches organizational knowledge — postmortems, advisories, runbooks — with semantic similarity and grounded citations | ChromaDB offline vector store | Integrated via Enterprise Search API |
+| **Semantic Graph** | MERIDIAN traverses Config -> Service -> Department -> Revenue semantic graph to calculate blast radius and revenue impact | networkx directed graph from `synthetic-data/ontology.json` | Enterprise Semantic Entity API |
+| **Org Signals** | CONTEXT reads organizational signals — calendar events, engineer PTO, team fatigue scores, hourly traffic patterns | JSON signal store from `synthetic-data/work_signals.json` | Enterprise Org API |
 
 ---
 
@@ -376,9 +376,9 @@ pytest tests/test_unit.py -v
 | Test Group | Tests | What It Proves |
 |------------|-------|----------------|
 | Model Validation | 12 | All 7 Pydantic models enforce correct types and constraints |
-| Fabric IQ Graph | 8 | Dependency graph correctly traverses Config -> Service -> Revenue paths |
-| Work IQ Signals | 5 | Organizational signals parse correctly and risk scores are directionally accurate |
-| Foundry IQ Data | 5 | Knowledge base contains real postmortems, advisories, and runbooks |
+| Dependency Graph | 8 | Dependency graph correctly traverses Config -> Service -> Revenue paths |
+| Org Signals | 5 | Organizational signals parse correctly and risk scores are directionally accurate |
+| Knowledge Base Data | 5 | Knowledge base contains real postmortems, advisories, and runbooks |
 | Pipeline Assembly | 4 | PipelineResult correctly aggregates all agent outputs and serializes to JSON |
 | CLI Exit Codes | 3 | BLOCK returns exit(1), SHIP/WARN returns exit(0) |
 | Suite Validation | 5 | All 73 test cases have valid IDs, categories, and required fields |

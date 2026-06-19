@@ -73,20 +73,17 @@ class HeliosAdapter(SimpleAdapter[Any]):
                 
                 response = f"## HELIOS Config Safety\n\n**Verdict**: {emoji} {verdict}\n**Risk Score**: {score}/100\n\n"
                 
-                if result.arbiter and result.arbiter.summary:
-                    response += f"**Summary**: {result.arbiter.summary}\n\n"
-                    
-                response += "**Reasoning Chain**:\n"
+                response += "**Agent Insights**:\n"
                 if result.sentinel:
-                    response += f"- **SENTINEL**: {result.arbiter.reasoning_sentinel if result.arbiter else ''}\n"
+                    response += f"- **SENTINEL**: {result.sentinel.behavior_change}\n"
                 if result.chronicle:
-                    response += f"- **CHRONICLE**: {result.arbiter.reasoning_chronicle if result.arbiter else ''}\n"
+                    response += f"- **CHRONICLE**: {result.chronicle.key_finding}\n"
                 if result.meridian:
-                    response += f"- **MERIDIAN**: {result.arbiter.reasoning_meridian if result.arbiter else ''}\n"
+                    response += f"- **MERIDIAN**: Blast Radius: {result.meridian.blast_radius_score}, Endpoints: {result.meridian.affected_endpoints_total}\n"
                 if result.context:
-                    response += f"- **CONTEXT**: {result.arbiter.reasoning_context if result.arbiter else ''}\n"
+                    response += f"- **CONTEXT**: Window Risk: {result.context.deployment_window_risk}\n"
                 if result.oracle:
-                    response += f"- **ORACLE**: {result.arbiter.reasoning_oracle if result.arbiter else ''}\n"
+                    response += f"- **ORACLE**: {result.oracle.key_prediction}\n"
                     
                 await tools.send_message(response, mentions=["@naveenkumarat24"])
                 

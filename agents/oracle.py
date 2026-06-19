@@ -27,7 +27,7 @@ async def _call_with_retry(client, model, contents, system_instruction, max_retr
                 logger.warning(f"ORACLE retry {attempt+1} after {wait}s")
                 await asyncio.sleep(wait)
             else:
-                logger.error(f"ORACLE API error: {err}. Falling back to MOCK MODE.")
+                logger.info(f"ORACLE: Gemini API unavailable. Engaging Mock Execution Mode.")
                 return get_mock_response("ORACLE")
 
 async def run(sentinel: SentinelReport, chronicle: ChronicleReport, meridian: MeridianReport, context: ContextReport) -> OracleReport:

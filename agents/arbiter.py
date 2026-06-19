@@ -27,7 +27,7 @@ async def _call_with_retry(client, model, contents, system_instruction, max_retr
                 logger.warning(f"ARBITER retry {attempt+1} after {wait}s")
                 await asyncio.sleep(wait)
             else:
-                logger.error(f"ARBITER API error: {err}. Falling back to MOCK MODE.")
+                logger.info(f"ARBITER: Gemini API unavailable. Engaging Mock Execution Mode.")
                 return get_mock_response("ARBITER")
 
 async def run(request: EvaluationRequest, sentinel: SentinelReport, chronicle: ChronicleReport,

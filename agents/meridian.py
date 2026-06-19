@@ -28,7 +28,7 @@ async def _call_with_retry(client, model, contents, system_instruction, max_retr
                 logger.warning(f"MERIDIAN retry {attempt+1} after {wait}s")
                 await asyncio.sleep(wait)
             else:
-                logger.error(f"MERIDIAN API error: {err}. Falling back to MOCK MODE.")
+                logger.info(f"MERIDIAN: Gemini API unavailable. Engaging Mock Execution Mode.")
                 return get_mock_response("MERIDIAN")
 
 async def run(sentinel: SentinelReport) -> MeridianReport:

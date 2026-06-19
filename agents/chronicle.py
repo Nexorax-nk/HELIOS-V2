@@ -32,7 +32,7 @@ async def _call_with_retry(client, model, contents, system_instruction, max_retr
                 logger.warning(f"CHRONICLE: retry {attempt+1}/{max_retries} after {wait}s — {err[:80]}")
                 await asyncio.sleep(wait)
             else:
-                logger.error(f"CHRONICLE API error: {err}. Falling back to MOCK MODE.")
+                logger.info(f"CHRONICLE: Gemini API unavailable. Engaging Mock Execution Mode.")
                 return get_mock_response("CHRONICLE")
 
 async def run(sentinel: SentinelReport) -> ChronicleReport:

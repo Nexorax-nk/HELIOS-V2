@@ -18,8 +18,14 @@ from agents.models import EvaluationRequest
 from orchestrator.pipeline import run_pipeline
 from datetime import datetime
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
 logger = logging.getLogger(__name__)
+
+# Suppress noisy logs for the demo
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("band").setLevel(logging.WARNING)
+logging.getLogger("phoenix_channels_python_client").setLevel(logging.WARNING)
+logging.getLogger("google_genai").setLevel(logging.WARNING)
 
 class HeliosAdapter(SimpleAdapter[Any]):
     def __init__(self):

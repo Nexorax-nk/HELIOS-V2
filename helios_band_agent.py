@@ -48,10 +48,10 @@ class HeliosAdapter(SimpleAdapter[Any]):
 
             filepath = Path(filename)
             if not filepath.exists():
-                await tools.send_message(f"Error: {filename} not found.")
+                await tools.send_message(f"@naveenkumarat24 Error: {filename} not found.")
                 return
 
-            await tools.send_message(f"Starting HELIOS evaluation for `{filename}`...")
+            await tools.send_message(f"@naveenkumarat24 Starting HELIOS evaluation for `{filename}`...")
             
             try:
                 diff = filepath.read_text(encoding="utf-8")
@@ -88,13 +88,13 @@ class HeliosAdapter(SimpleAdapter[Any]):
                 if result.oracle:
                     response += f"- **ORACLE**: {result.arbiter.reasoning_oracle if result.arbiter else ''}\n"
                     
-                await tools.band_send_message(response)
+                await tools.send_message(f"@naveenkumarat24\n\n{response}")
                 
             except Exception as e:
-                await tools.band_send_message(f"Error running pipeline: {str(e)}")
+                await tools.send_message(f"@naveenkumarat24 Error running pipeline: {str(e)}")
                 
         elif "hello" in content_lower or "hi" in content_lower:
-            await tools.band_send_message("Hello! I am the HELIOS Orchestrator. Mention me with `evaluate demo/config_b.yaml` to run a safety evaluation on a config file.")
+            await tools.send_message("@naveenkumarat24 Hello! I am the HELIOS Orchestrator. Mention me with `evaluate demo/config_b.yaml` to run a safety evaluation on a config file.")
 
 async def main():
     agent_id, api_key = load_agent_config("helios_orchestrator")

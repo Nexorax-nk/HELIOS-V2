@@ -48,10 +48,10 @@ class HeliosAdapter(SimpleAdapter[Any]):
 
             filepath = Path(filename)
             if not filepath.exists():
-                await tools.band_send_message(f"Error: {filename} not found.")
+                await tools.send_message(f"Error: {filename} not found.")
                 return
 
-            await tools.band_send_message(f"Starting HELIOS evaluation for `{filename}`...")
+            await tools.send_message(f"Starting HELIOS evaluation for `{filename}`...")
             
             try:
                 diff = filepath.read_text(encoding="utf-8")

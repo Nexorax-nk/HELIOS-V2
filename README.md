@@ -97,44 +97,57 @@ HELIOS completely abandons rigid, procedural pipelines. Instead, it uses the **B
 graph TD
     classDef input fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc,rx:8px,ry:8px
     classDef agent fill:#0f172a,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc,rx:8px,ry:8px
-    classDef room fill:#020617,stroke:#3b82f6,stroke-width:3px,color:#f8fafc,rx:15px,ry:15px
-    classDef event fill:#334155,stroke:#cbd5e1,stroke-width:1px,color:#f8fafc,stroke-dasharray: 5 5,rx:4px,ry:4px
+    classDef room fill:#172554,stroke:#3b82f6,stroke-width:3px,color:#eff6ff,rx:20px,ry:20px
+    classDef data fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#ecfdf5,rx:8px,ry:8px
+    classDef output fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2,rx:8px,ry:8px
 
     Trigger(["⚡ CI/CD / CLI Trigger"]):::input
     
+    subgraph Enterprise ["Enterprise Data Integrations"]
+        direction LR
+        KB[("📚 Knowledge Base<br/>(Postmortems)")]:::data
+        Graph[("🗺️ Semantic Graph<br/>(Topology)")]:::data
+        Signals[("🕐 Org Signals<br/>(Fatigue/PTO)")]:::data
+    end
+
     subgraph Band ["Band SDK Multi-Agent Environment"]
         direction TB
         BandRoom(("🔵 Shared Band Room<br/>(Pub/Sub Event Bus)")):::room
         
-        SENTINEL("👁️ SENTINEL<br/>(Semantic Engine)"):::agent
+        SENTINEL("👁️ SENTINEL<br/>(Semantic)"):::agent
         CHRONICLE("📚 CHRONICLE<br/>(Historical)"):::agent
         MERIDIAN("🗺️ MERIDIAN<br/>(Blast Radius)"):::agent
         CONTEXT("🕐 CONTEXT<br/>(Org State)"):::agent
-        ORACLE("🔮 ORACLE<br/>(Consequence Engine)"):::agent
-        ARBITER("⚖️ ARBITER<br/>(Decision Engine)"):::agent
-        
-        Trigger -->|1. ConfigChangeRequested| BandRoom
-        BandRoom -->|Subscribes| SENTINEL
-        
-        SENTINEL -->|2. SemanticAnalysisCompleted| BandRoom
-        
-        BandRoom -->|Subscribes| CHRONICLE
-        BandRoom -->|Subscribes| MERIDIAN
-        BandRoom -->|Subscribes| CONTEXT
-        
-        CHRONICLE -.->|3. EvidenceGathered| BandRoom
-        MERIDIAN -.->|3. EvidenceGathered| BandRoom
-        CONTEXT -.->|3. EvidenceGathered| BandRoom
-        
-        BandRoom -->|Subscribes| ORACLE
-        ORACLE -->|4. ConsequencePredicted| BandRoom
-        
-        BandRoom -->|Subscribes| ARBITER
-        ARBITER -->|5. EvaluationVerdictIssued| BandRoom
+        ORACLE("🔮 ORACLE<br/>(Consequence)"):::agent
+        ARBITER("⚖️ ARBITER<br/>(Decision)"):::agent
     end
     
-    Verdict{"🛑 BLOCK DEPLOYMENT"}:::input
-    BandRoom -->|Reads Final Verdict| Verdict
+    Verdict{"🛑 BLOCK DEPLOYMENT"}:::output
+
+    %% Event Flow
+    Trigger -->|1. ConfigChangeRequested| BandRoom
+    
+    BandRoom -.->|Subscribes| SENTINEL
+    SENTINEL ==>|2. SemanticAnalysisCompleted| BandRoom
+    
+    BandRoom -.->|Subscribes| CHRONICLE
+    BandRoom -.->|Subscribes| MERIDIAN
+    BandRoom -.->|Subscribes| CONTEXT
+    
+    %% Data Queries
+    CHRONICLE <-->|"Vector Search"| KB
+    MERIDIAN <-->|"Graph Traversal"| Graph
+    CONTEXT <-->|"API Query"| Signals
+    
+    CHRONICLE ==>|3. EvidenceGathered| BandRoom
+    MERIDIAN ==>|3. EvidenceGathered| BandRoom
+    CONTEXT ==>|3. EvidenceGathered| BandRoom
+    
+    BandRoom -.->|Subscribes| ORACLE
+    ORACLE ==>|4. ConsequencePredicted| BandRoom
+    
+    BandRoom -.->|Subscribes| ARBITER
+    ARBITER ==>|5. EvaluationVerdictIssued| Verdict
 ```
 
 ### Event Flow:

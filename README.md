@@ -104,7 +104,7 @@ graph TD
     
     subgraph Band ["Band SDK Multi-Agent Environment"]
         direction TB
-        BandRoom((("🔵 Shared Band Room<br/>(Pub/Sub Event Bus)"))):::room
+        BandRoom(("🔵 Shared Band Room<br/>(Pub/Sub Event Bus)")):::room
         
         SENTINEL("👁️ SENTINEL<br/>(Semantic Engine)"):::agent
         CHRONICLE("📚 CHRONICLE<br/>(Historical)"):::agent
@@ -133,7 +133,7 @@ graph TD
         ARBITER -->|5. EvaluationVerdictIssued| BandRoom
     end
     
-    Verdict{("🛑 BLOCK DEPLOYMENT")}:::input
+    Verdict{"🛑 BLOCK DEPLOYMENT"}:::input
     BandRoom -->|Reads Final Verdict| Verdict
 ```
 

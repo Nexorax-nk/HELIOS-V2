@@ -513,16 +513,17 @@ Content-Type: application/json
 ```
 HELIOS/
 |-- agents/                  # 6 AI agents (the reasoning core)
-|   |-- sentinel.py          # Layer 1: Semantic change analysis
-|   |-- chronicle.py         # Layer 2: Historical evidence (Foundry IQ)
-|   |-- meridian.py          # Layer 2: Dependency mapping (Fabric IQ)
-|   |-- context.py           # Layer 2: Organizational state (Work IQ)
-|   |-- oracle.py            # Layer 3: Cross-domain prediction
-|   |-- arbiter.py           # Layer 4: Final verdict + remediation
+|   |-- sentinel.py          # Semantic change analysis
+|   |-- chronicle.py         # Historical evidence
+|   |-- meridian.py          # Dependency mapping
+|   |-- context.py           # Organizational state
+|   |-- oracle.py            # Cross-domain prediction
+|   |-- arbiter.py           # Final verdict + remediation
 |   |-- models.py            # Pydantic models for all agent I/O
 |
 |-- orchestrator/            # Pipeline execution engine
 |   |-- pipeline.py          # Async 6-agent pipeline with SSE streaming
+|   |-- band_shim.py         # Simulated Band SDK Event Bus
 |
 |-- integrations/            # Enterprise data layer implementations
 |   |-- foundry_iq.py        # ChromaDB vector search (knowledge base)
@@ -542,12 +543,12 @@ HELIOS/
 |   |-- app.js               # Live pipeline visualization
 |   |-- style.css            # Styling
 |
-|-- knowledge-base/          # Foundry IQ content
+|-- knowledge-base/          # Enterprise knowledge content
 |   |-- incidents/           # 5 real-world postmortems
 |   |-- advisories/          # 2 vendor advisories
 |   |-- runbooks/            # 1 service runbook
 |
-|-- synthetic-data/          # Fabric IQ + Work IQ data
+|-- synthetic-data/          # Enterprise context data
 |   |-- ontology.json        # Service dependency graph
 |   |-- services.json        # Service metadata + endpoints
 |   |-- employees.json       # Engineer profiles + PTO
@@ -566,6 +567,9 @@ HELIOS/
 |
 |-- .github/workflows/       # CI/CD
 |   |-- helios-pr.yml        # GitHub Action for PR evaluation
+|
+|-- helios_band_agent.py     # Live Band SDK Agent endpoint
+|-- agent_config.yaml        # Band SDK credentials
 ```
 
 ---
